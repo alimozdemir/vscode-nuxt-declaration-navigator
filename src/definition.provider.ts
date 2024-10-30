@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import { defaultProvider } from './vscode.helper';
 import { State } from './state';
 import * as path from 'path';
-
+import * as fs from 'fs/promises';
+import * as ts from 'typescript';
 
 export function declarationProvider(state: State): vscode.DefinitionProvider {
     return {
@@ -19,35 +20,145 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
             const defaultDef = await defaultProvider(state, document, position);
 
             try {
-                if (defaultDef) {
+                if (defaultDef && defaultDef.length > 0) {
                     for (const def of defaultDef) {
                         if (def.targetUri.path.endsWith('.d.ts')) {
-                            const document = await vscode.workspace.openTextDocument(def.targetUri);
-                            const text = document.getText(def.targetRange);
-
-                            const regex = /import\(["'](.+?)["']\)/;
-                            const match = text.match(regex);
-                            const importPath = match ? match[1] : null;
-
-                            state.log.appendLine("Import path:" + importPath);
-                            if (importPath) {
-                                const documentFolder = path.dirname(document.uri.fsPath);
-                                const absoluteImportPath = path.resolve(documentFolder, importPath);
-
-                                result.push({
-                                    range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
-                                    uri: vscode.Uri.parse(absoluteImportPath),
-                                });
-                            }
+                            const dTsResult = await dTs(def);
+                            result.push(...dTsResult);
                         }
                     }
                 }
             } catch (error) {
+                console.error(error)
                 state.log.appendLine('error: ' + error);
             }
 
             return result;
         }
     };
+
+    async function dTs(def: vscode.LocationLink) {
+        const document = await vscode.workspace.openTextDocument(def.targetUri);
+        const text = document.getText(def.targetRange);
+
+        const regex = /import\(["'](.+?)["']\)/;
+        const match = text.match(regex);
+        const importPath = match ? match[1] : null;
+
+        let result: vscode.Location[];
+
+        if (importPath) {
+            result = await inlineImport(importPath, document);
+        } else {
+            result = await topImport(text, document);
+        }
+
+        return result;
+    }
+
+    async function inlineImport(importPath: string, document: vscode.TextDocument) {
+        state.log.appendLine("Import path:" + importPath);
+
+        const result: vscode.Location[] = [];
+
+        if (importPath) {
+            const absoluteImportPath = correlatePath(document, importPath);
+            const foundFile = await findFile(absoluteImportPath);
+
+            state.log.appendLine("Absolute path:" + foundFile);
+
+            if (foundFile) {
+                result.push({
+                    range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
+                    uri: vscode.Uri.parse(foundFile),
+                });
+            }
+        }
+
+        return result;
+    }
+
+    async function topImport(text: string, document: vscode.TextDocument) {
+        const result: vscode.Location[] = [];
+
+        if (!text.includes(':')) {
+            return result;
+        }
+
+        const pair = text.split(':');
+
+        if (!pair || pair.length !== 2) {
+            return result;
+        }
+
+        let typeDef = pair[1].trim();
+
+        if (typeDef.endsWith(','))
+            typeDef = typeDef.slice(0, -1);
+
+        console.log('typeDef', typeDef)
+
+        // TODO: ts.ScriptTarget.Latest might lead to issues
+        const sf = ts.createSourceFile('dummy', document.getText(), ts.ScriptTarget.Latest);
+
+        const importDeclarations = sf.statements.filter(ts.isImportDeclaration);
+        const importDec = importDeclarations.find(i => i.getText(sf).includes(typeDef));
+        
+        if (!importDec) {
+            return result;
+        }
+
+        const importPath = importDec.moduleSpecifier.getText(sf).slice(1, -1);
+        const absoluteImportPath = correlatePath(document, importPath);
+
+        const foundFile = await findFile(absoluteImportPath);
+
+        state.log.appendLine("Absolute path:" + foundFile);
+
+        if (foundFile) {
+            result.push({
+                range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
+                uri: vscode.Uri.parse(foundFile),
+            });
+        }
+
+        return result;
+    }
+
+    async function findFile(filePath: string): Promise<string | undefined> {
+        console.log('findFile', filePath);
+        if (await fileExists(filePath)) {
+            return filePath;
+        }
+
+        const possibleExtensions = ['.d.ts', '.vue', '.ts', '.tsx', '.js', '.jsx'];
+        
+        for (const ext of possibleExtensions) {
+            const possiblePath = filePath + ext;
+
+            if (await fileExists(possiblePath)) {
+                return possiblePath;
+            }
+        }
+
+        return undefined;
+    }
+
+    function correlatePath(document: vscode.TextDocument, importPath: string) {
+        const documentFolder = path.dirname(document.uri.fsPath);
+        const absoluteImportPath = path.resolve(state.workspaceRoot ?? '', 
+            documentFolder, importPath);
+
+        return absoluteImportPath;
+    }
+
+    async function fileExists(filePath: string) {
+        try {
+            await fs.stat(filePath);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 }
 

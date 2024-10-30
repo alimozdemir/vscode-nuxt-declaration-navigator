@@ -5,4 +5,5 @@ export interface State {
     log: vscode.OutputChannel;
     extensionId: string;
     extensionName: string;
+    workspaceRoot?: string;
 }

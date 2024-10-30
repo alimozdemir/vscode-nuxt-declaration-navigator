@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { $dialog } = useNuxtApp();
+
 </script>
 
 <template>
