@@ -41,14 +41,15 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
         const document = await vscode.workspace.openTextDocument(def.targetUri);
         const text = document.getText(def.targetRange);
 
-        const regex = /import\(["'](.+?)["']\)/;
+        const regex = /import\(["'](.+?)["']\)\['(.*?)'\]/;
         const match = text.match(regex);
-        const importPath = match ? match[1] : null;
+        const importPath = match ? match[1] : undefined;
+        const bracketText = match ? match[2] : undefined;
 
         let result: vscode.Location[];
 
         if (importPath) {
-            result = await inlineImport(importPath, document);
+            result = await inlineImport(importPath, document, bracketText);
         } else {
             result = await topImport(text, document);
         }
@@ -56,7 +57,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
         return result;
     }
 
-    async function inlineImport(importPath: string, document: vscode.TextDocument) {
+    async function inlineImport(importPath: string, document: vscode.TextDocument, pointer?: string) {
         state.log.appendLine("Import path:" + importPath);
 
         const result: vscode.Location[] = [];
@@ -68,8 +69,13 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
             state.log.appendLine("Absolute path:" + foundFile);
 
             if (foundFile) {
+                let position = new vscode.Position(0, 0);
+
+                if (pointer)
+                    position = await findPosition(pointer, foundFile) ?? new vscode.Position(0, 0);
+                
                 result.push({
-                    range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
+                    range: new vscode.Range(position, position),
                     uri: vscode.Uri.parse(foundFile),
                 });
             }
@@ -96,14 +102,12 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
         if (typeDef.endsWith(','))
             typeDef = typeDef.slice(0, -1);
 
-        console.log('typeDef', typeDef)
-
         // TODO: ts.ScriptTarget.Latest might lead to issues
         const sf = ts.createSourceFile('dummy', document.getText(), ts.ScriptTarget.Latest);
 
         const importDeclarations = sf.statements.filter(ts.isImportDeclaration);
         const importDec = importDeclarations.find(i => i.getText(sf).includes(typeDef));
-        
+
         if (!importDec) {
             return result;
         }
@@ -126,13 +130,12 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
     }
 
     async function findFile(filePath: string): Promise<string | undefined> {
-        console.log('findFile', filePath);
         if (await fileExists(filePath)) {
             return filePath;
         }
 
         const possibleExtensions = ['.d.ts', '.vue', '.ts', '.tsx', '.js', '.jsx'];
-        
+
         for (const ext of possibleExtensions) {
             const possiblePath = filePath + ext;
 
@@ -146,7 +149,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
 
     function correlatePath(document: vscode.TextDocument, importPath: string) {
         const documentFolder = path.dirname(document.uri.fsPath);
-        const absoluteImportPath = path.resolve(state.workspaceRoot ?? '', 
+        const absoluteImportPath = path.resolve(state.workspaceRoot ?? '',
             documentFolder, importPath);
 
         return absoluteImportPath;
@@ -159,6 +162,32 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
         } catch (error) {
             return false;
         }
+    }
+
+    async function findPosition(objectName: string, filePath: string): Promise<vscode.Position | undefined> {
+        const document = await vscode.workspace.openTextDocument(filePath);
+        // TODO: ts.ScriptTarget.Latest might lead to issues
+        const sf = ts.createSourceFile('dummy', document.getText(), ts.ScriptTarget.Latest);
+
+        let foundPosition: vscode.Position | undefined;
+
+        const visitor: ts.Visitor = node => {
+
+            if (ts.isVariableDeclaration(node)) {
+                if (node.name.getText(sf) === objectName) {
+                    const start = node.getStart(sf);
+                    const position = document.positionAt(start);
+                    foundPosition = position;
+                    return;
+                }
+            }
+
+            return ts.visitEachChild(node, visitor, undefined);
+        };
+
+        ts.visitNode(sf, visitor);
+
+        return foundPosition;
     }
 }
 
