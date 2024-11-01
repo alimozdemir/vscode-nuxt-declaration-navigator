@@ -32,7 +32,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
                 console.error(error)
                 state.log.appendLine('error: ' + error);
             }
-            
+
             return result;
         }
     };
@@ -175,6 +175,13 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
 
             if (ts.isVariableDeclaration(node)) {
                 if (node.name.getText(sf) === objectName) {
+                    const start = node.getStart(sf);
+                    const position = document.positionAt(start);
+                    foundPosition = position;
+                    return;
+                }
+            } else if (ts.isFunctionDeclaration(node)) {
+                if (node.name?.getText(sf) === objectName) {
                     const start = node.getStart(sf);
                     const position = document.positionAt(start);
                     foundPosition = position;

@@ -10,6 +10,7 @@ const call = $fetch('/api/myapi');
 
 <template>
   <div>
+    <NuxtLoadingIndicator></NuxtLoadingIndicator>
     <NuxtRouteAnnouncer />
     <MyComponent></MyComponent>
     <my-component></my-component>
@@ -19,5 +20,11 @@ const call = $fetch('/api/myapi');
 
     <Folder></Folder>
     <FolderMyCode></FolderMyCode>
+
+    <div v-if="useText()">
+    </div>
+
+    <div v-if="useTest()">
+    </div>
   </div>
 </template>
