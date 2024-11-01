@@ -19,4 +19,4 @@ jobs:
     - name: Install pnpm
       uses: pnpm/action-setup@v4
     - run: pnpm install
-    - run: pnpm run publish
+    - run: pnpm run deploy
