@@ -2,6 +2,6 @@
 </script>
 <template>
     <div>
-        <h1>MyImportComponent</h1>
+        <h1>Folder</h1>
     </div>
 </template>

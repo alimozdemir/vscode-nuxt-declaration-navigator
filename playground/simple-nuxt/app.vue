@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import MyImportComponent from '~/components/MyImportComponent.vue';
+import ABC from '~/components/MyImportComponent.vue';
 
 const { $dialog } = useNuxtApp();
 
 const com = computed(() => '');
+
+const call = $fetch('/api/myapi');
 </script>
 
 <template>
@@ -11,8 +13,11 @@ const com = computed(() => '');
     <NuxtRouteAnnouncer />
     <MyComponent></MyComponent>
     <my-component></my-component>
-    <MyImportComponent></MyImportComponent>
+    <ABC></ABC>
     <Head></Head>
     <NuxtWelcome />
+
+    <Folder></Folder>
+    <FolderMyCode></FolderMyCode>
   </div>
 </template>
