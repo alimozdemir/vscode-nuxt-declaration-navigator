@@ -18,9 +18,6 @@ jobs:
       with:
         node-version: 20.x
 
-    - name: Install pnpm
-      uses: borales/actions-yarn@v4
-
     - run: yarn install
 
     - run: yarn run compile
