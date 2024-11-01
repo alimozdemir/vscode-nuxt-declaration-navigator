@@ -7,7 +7,7 @@ export async function configuration(name: string, e: vscode.ExtensionContext) {
   const config = vscode.workspace.getConfiguration();
 
   if (e.globalState.get(confirmSetting))
-    return;
+    {return;}
 
   if (config.get(multipleDefinitions) === 'goto') {
     return;
@@ -21,7 +21,7 @@ export async function configuration(name: string, e: vscode.ExtensionContext) {
     `,
     'OK',
     'Not now'
-  )
+  );
 
   if (response === 'OK') {
     await config.update(multipleDefinitions, 'goto');

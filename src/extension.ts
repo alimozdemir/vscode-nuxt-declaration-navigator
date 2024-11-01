@@ -22,14 +22,14 @@ export function activate(context: vscode.ExtensionContext) {
 		log: vscode.window.createOutputChannel(extensionName),
 		extensionId: extensionId,
 		extensionName
-	}
+	};
 	const config = vscode.workspace.getConfiguration();
 
 	config.update('editor.gotoLocation.multipleDefinitions', 'goto');
 	const workspaceRoot = getWorkspaceRoot();
 
 	if (workspaceRoot)
-		state.workspaceRoot = workspaceRoot;
+		{state.workspaceRoot = workspaceRoot;}
 
 	console.log(`${state.extensionName} is now actived (${state.extensionId})`);
 
@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		{ scheme: 'file', language: 'javascriptreact' },
 		{ scheme: 'file', language: 'typescriptreact' },
 		{ scheme: 'file', language: 'vue' }
-	], declarationProvider(state))
+	], declarationProvider(state));
 
 	context.subscriptions.push(state.log, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);

@@ -18,5 +18,10 @@ jobs:
         node-version: 20.x
     - name: Install pnpm
       uses: pnpm/action-setup@v4
+
     - run: pnpm install
-    - run: pnpm run deploy
+
+    - name: Publish
+      run: pnpm run deploy
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}

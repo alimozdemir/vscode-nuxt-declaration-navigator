@@ -8,7 +8,7 @@ import * as ts from 'typescript';
 export function declarationProvider(state: State): vscode.DefinitionProvider {
     return {
         async provideDefinition(document: vscode.TextDocument, position: vscode.Position) {
-            if (state.commandCall) return;
+            if (state.commandCall) {return;}
 
             const range = document.getWordRangeAtPosition(position);
             const objectName = document.getText(range);
@@ -29,7 +29,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
                     }
                 }
             } catch (error) {
-                console.error(error)
+                console.error(error);
                 state.log.appendLine('error: ' + error);
             }
 
@@ -72,7 +72,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
                 let position = new vscode.Position(0, 0);
 
                 if (pointer)
-                    position = await findPosition(pointer, foundFile) ?? new vscode.Position(0, 0);
+                    {position = await findPosition(pointer, foundFile) ?? new vscode.Position(0, 0);}
                 
                 result.push({
                     range: new vscode.Range(position, position),
@@ -100,7 +100,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
         let typeDef = pair[1].trim();
 
         if (typeDef.endsWith(','))
-            typeDef = typeDef.slice(0, -1);
+            {typeDef = typeDef.slice(0, -1);}
 
         // TODO: ts.ScriptTarget.Latest might lead to issues
         const sf = ts.createSourceFile('dummy', document.getText(), ts.ScriptTarget.Latest);
