@@ -32,7 +32,7 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
                 console.error(error)
                 state.log.appendLine('error: ' + error);
             }
-
+            
             return result;
         }
     };
@@ -157,8 +157,8 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
 
     async function fileExists(filePath: string) {
         try {
-            await fs.stat(filePath);
-            return true;
+            const result = await fs.stat(filePath);
+            return result.isFile();
         } catch (error) {
             return false;
         }
