@@ -4,6 +4,7 @@ import { declarationProvider } from './definition.provider';
 import { configuration } from './configuration';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
+const extensionId = 'vscode-nuxt-declaration-navigator';
 
 function getWorkspaceRoot(): string | undefined {
 	const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -19,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const state: State = {
 		commandCall: false,
 		log: vscode.window.createOutputChannel(extensionName),
-		extensionId: 'vscode-declaration-navigator',
+		extensionId: extensionId,
 		extensionName
 	}
 	const config = vscode.workspace.getConfiguration();
@@ -34,10 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	state.log.appendLine(`${state.extensionName} is now actived (${state.extensionId})`);
 
-	const disposable = vscode.commands.registerCommand('vscode-declaration-navigator.helloWorld', () => {
-		vscode.window.showInformationMessage('!2Hello World from vscode-declaration-navigator!!!!');
-	});
-
 	const definitionProvider = vscode.languages.registerDefinitionProvider([
 		{ scheme: 'file', language: 'javascript' },
 		{ scheme: 'file', language: 'typescript' },
@@ -46,11 +43,11 @@ export function activate(context: vscode.ExtensionContext) {
 		{ scheme: 'file', language: 'vue' }
 	], declarationProvider(state))
 
-	context.subscriptions.push(state.log, disposable, definitionProvider);
+	context.subscriptions.push(state.log, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {
-	console.log('Your extension "vscode-declaration-navigator" is now deactivated!');
+	console.log(`Your extension "${extensionId}" is now deactivated!`);
 }
