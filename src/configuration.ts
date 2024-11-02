@@ -1,10 +1,10 @@
-import * as vscode from 'vscode';
+import { ExtensionContext, window, workspace } from 'vscode';
 
 const multipleDefinitions = 'editor.gotoLocation.multipleDefinitions';
 const confirmSetting = 'editor.gotoLocation.confirmPeek';
 
-export async function configuration(name: string, e: vscode.ExtensionContext) {
-  const config = vscode.workspace.getConfiguration();
+export async function configuration(name: string, e: ExtensionContext) {
+  const config = workspace.getConfiguration();
 
   if (e.globalState.get(confirmSetting))
     {return;}
@@ -13,7 +13,7 @@ export async function configuration(name: string, e: vscode.ExtensionContext) {
     return;
   }
 
-  const response = await vscode.window.showInformationMessage(
+  const response = await window.showInformationMessage(
     `
     [${name}]
     We recommend you to set ${multipleDefinitions} to 'goto' for better experience

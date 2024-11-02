@@ -5,6 +5,7 @@ import { configuration } from './configuration';
 import { apiDetector } from './api.detector';
 import { getNuxtFolder, joinPath } from './file';
 import { ApiHoverProvider } from './hover/api.hover';
+import { MainProvider } from './definition/main';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
@@ -51,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 		{ scheme: 'file', language: 'javascriptreact' },
 		{ scheme: 'file', language: 'typescriptreact' },
 		{ scheme: 'file', language: 'vue' }
-	], declarationProvider(state));
+	], new MainProvider(state));
 
 	const hover = vscode.languages.registerHoverProvider([
 		{ scheme: 'file', language: 'vue' }

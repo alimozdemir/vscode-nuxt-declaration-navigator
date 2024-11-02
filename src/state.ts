@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
+import { OutputChannel } from 'vscode';
 
 export interface State {
     commandCall: boolean;
-    log: vscode.OutputChannel;
+    log: OutputChannel;
     extensionId: string;
     extensionName: string;
     workspaceRoot?: string;

@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
+import { TextDocument, Position, commands, LocationLink } from 'vscode';
 import { State } from './state';
 
-export async function defaultProvider(state: State, document: vscode.TextDocument, position: vscode.Position) {
+export async function defaultProvider(state: State, document: TextDocument, position: Position) {
     state.commandCall = true;
-    const definitions = await vscode.commands.executeCommand<vscode.LocationLink[]>(
+    const definitions = await commands.executeCommand<LocationLink[]>(
         'vscode.executeDefinitionProvider',
         document.uri,
         position
