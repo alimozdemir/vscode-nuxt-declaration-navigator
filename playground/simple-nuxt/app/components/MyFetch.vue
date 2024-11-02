@@ -16,6 +16,21 @@ const call5 = $fetch('/api/change', {
 })
 
 const call6 = $fetch('/api/change')
+
+const id = 1;
+
+const call7 = $fetch(`/api/blog/` + id)
+
+const call8 = $fetch('/api/blog/' + id)
+
+const call9 = $fetch("/api/blog/" + id)
+
+const call10 = $fetch(`/api/blog/${id}`)
+
+const call11 = $fetch(`/api/blog/${id}/new`)
+
+const call12 = $fetch("/api/blog/" + id + '/new')
+const call13 = $fetch("/api/blog/" + id + '/new/' + id + '/abc')
 </script>
 
 <template>

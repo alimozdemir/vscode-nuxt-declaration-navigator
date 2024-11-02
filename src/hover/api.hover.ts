@@ -23,13 +23,11 @@ export class ApiHoverProvider implements HoverProvider {
         const fullPath = correlatePath(document, result, this.state.workspaceRoot);
         const file = await findFile(fullPath, ['.ts', '.js']);
 
-        this.state.log.appendLine(`Hovering over ${isApi} at ${fullPath}`);
-        
         if (!file) {
           return;
         }
 
-        this.state.log.appendLine(`Hovering over ${isApi} at ${file}`);
+        this.state.log.appendLine(`Hovering over ${isApi.path} at ${file}`);
 
         const hoverDoc = await workspace.openTextDocument(file);
         const md = new MarkdownString();

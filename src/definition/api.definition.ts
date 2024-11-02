@@ -22,7 +22,7 @@ export class ApiDefinitionProvider {
         const fullPath = correlatePath(document, result, this.state.workspaceRoot);
         const file = await findFile(fullPath, ['.ts', '.js']);
 
-        this.state.log.appendLine(`Hovering over ${isApi} at ${fullPath}`);
+        this.state.log.appendLine(`Hovering over ${isApi.path} at ${fullPath}`);
         
         if (!file) {
           return;

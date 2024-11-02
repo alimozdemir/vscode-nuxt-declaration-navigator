@@ -4,7 +4,11 @@ import { createSourceFile, ScriptTarget, Node, isCallExpression,
   SyntaxKind,
   isObjectLiteralExpression,
   ObjectLiteralExpression,
-  isStringLiteral} from 'typescript';
+  isStringLiteral,
+  SourceFile,
+  isTemplateExpression,
+  isBinaryExpression,
+  isNoSubstitutionTemplateLiteral} from 'typescript';
 import { ApiResult } from './types/api.result';
 
 const functionNames = ['$fetch', 'useFetch', '$fetchSetup'];
@@ -41,13 +45,14 @@ export function apiDetector(document: TextDocument, position: Position) : ApiRes
   if (foundNode && foundNode.arguments.length > 0) {
     const arg = foundNode.arguments[0];
     const argText = arg.getText(sourceFile);
+    console.log('argText', argText);
+    console.log('normalized', normalizePath(arg, sourceFile))
 
     let method: string | undefined = undefined;
 
     // try to find the method
     if (foundNode.arguments.length > 1) {
       const secondArg = foundNode.arguments[1];
-      const methodText = secondArg.getText(sourceFile);
       if (isObjectLiteralExpression(secondArg)) {
         const object: ObjectLiteralExpression = secondArg;
 
@@ -70,4 +75,32 @@ export function apiDetector(document: TextDocument, position: Position) : ApiRes
       };
     }
   }
+}
+
+function normalizePath(node: Node, sourceFile: SourceFile): string {
+  if (isStringLiteral(node) || isNoSubstitutionTemplateLiteral(node)) {
+    return node.text;
+  }
+
+  if (isTemplateExpression(node)) {
+    let result = node.head.text;
+    console.log('isTemplateExpression', result);
+    node.templateSpans.forEach(span => {
+        result += ':param' + span.literal.text;
+    });
+    return result;
+  }
+
+  if (isBinaryExpression(node) && node.operatorToken.kind === SyntaxKind.PlusToken) {
+      const left = normalizePath(node.left, sourceFile);
+      const right = normalizePath(node.right, sourceFile);
+      console.log('isBinaryExpression', node.left.kind, right);
+      if (left.endsWith(':param') || right.startsWith(':param')) {
+        return left + right;
+      } else {
+        return left + ':param' + right;
+      }
+  }
+
+  return '';
 }

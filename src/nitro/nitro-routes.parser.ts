@@ -50,7 +50,6 @@ export async function nitroRoutesParser(path: string, api: ApiResult): Promise<s
 
       if (assign && isStringLiteral(assign)) {
         const text = assign.text.toLocaleLowerCase();
-        console.log('text', text);
         if (text === 'default' || (method && text === method)) {
           foundProp = node;
           return;
