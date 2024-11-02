@@ -6,4 +6,6 @@ export interface State {
     extensionId: string;
     extensionName: string;
     workspaceRoot?: string;
+    nuxtFolder?: string;
+    nitroRoutes?: string;
 }

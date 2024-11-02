@@ -3,14 +3,17 @@ import { State } from './state';
 import { declarationProvider } from './definition.provider';
 import { configuration } from './configuration';
 import { apiDetector } from './api.detector';
+import { getNuxtFolder, joinPath } from './file';
+import { ApiHoverProvider } from './hover/api.hover';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
+const nitroRoutes = 'types/nitro-routes.d.ts';
 
 function getWorkspaceRoot(): string | undefined {
 	const workspaceFolders = vscode.workspace.workspaceFolders;
 	if (workspaceFolders && workspaceFolders.length > 0) {
-			return workspaceFolders[0].uri.fsPath;
+		return workspaceFolders[0].uri.fsPath;
 	}
 	return undefined;
 }
@@ -29,8 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
 	config.update('editor.gotoLocation.multipleDefinitions', 'goto');
 	const workspaceRoot = getWorkspaceRoot();
 
-	if (workspaceRoot)
-		{state.workspaceRoot = workspaceRoot;}
+	if (workspaceRoot) {
+		state.workspaceRoot = workspaceRoot;
+
+		getNuxtFolder(state.workspaceRoot).then((folder) => {
+			state.nuxtFolder = folder;
+			state.nitroRoutes = folder ? joinPath(folder, nitroRoutes) : undefined;
+		});
+	}
 
 	console.log(`${state.extensionName} is now actived (${state.extensionId})`);
 
@@ -44,18 +53,11 @@ export function activate(context: vscode.ExtensionContext) {
 		{ scheme: 'file', language: 'vue' }
 	], declarationProvider(state));
 
-	const abc2 = vscode.languages.registerHoverProvider([
+	const hover = vscode.languages.registerHoverProvider([
 		{ scheme: 'file', language: 'vue' }
-	], {
-		provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+	], new ApiHoverProvider(state))
 
-			console.log('Hovering over', apiDetector(document, position));
-
-			return new vscode.Hover("Hello World", new vscode.Range(new vscode.Position(position.line, position.character - 5), position));
-		}
-	})
-
-	context.subscriptions.push(state.log, definitionProvider);
+	context.subscriptions.push(state.log, hover, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);
 }
 

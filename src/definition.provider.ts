@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { defaultProvider } from './vscode.helper';
 import { State } from './state';
 import * as path from 'path';
-import * as fs from 'fs/promises';
 import * as ts from 'typescript';
+import { fileExists } from './file';
 
 export function declarationProvider(state: State): vscode.DefinitionProvider {
     return {
@@ -153,15 +153,6 @@ export function declarationProvider(state: State): vscode.DefinitionProvider {
             documentFolder, importPath);
 
         return absoluteImportPath;
-    }
-
-    async function fileExists(filePath: string) {
-        try {
-            const result = await fs.stat(filePath);
-            return result.isFile();
-        } catch (error) {
-            return false;
-        }
     }
 
     async function findPosition(objectName: string, filePath: string): Promise<vscode.Position | undefined> {
