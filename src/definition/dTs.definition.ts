@@ -9,7 +9,7 @@ export class dTsDefinitionProvider {
   constructor(private state: State) {  
   }
   
-  async run(def: LocationLink) {
+  async run(def: LocationLink) : Promise<Location[]> {
     const document = await workspace.openTextDocument(def.targetUri);
     const text = document.getText(def.targetRange);
   
