@@ -54,7 +54,7 @@ export function activate(context: ExtensionContext) {
 
 	const hover = languages.registerHoverProvider([
 		{ scheme: 'file', language: 'vue' }
-	], new ApiHoverProvider(state))
+	], new ApiHoverProvider(state));
 
 	context.subscriptions.push(state.log, hover, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);

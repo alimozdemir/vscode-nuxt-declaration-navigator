@@ -12,7 +12,7 @@ export class ApiHoverProvider implements HoverProvider {
     let hover: Hover | undefined;
 
     if (!this.state.nitroRoutes)
-      return hover;
+      {return hover;}
 
     const isApi = apiDetector(document, position);
     

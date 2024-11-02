@@ -29,7 +29,7 @@ export async function nitroRoutesParser(path: string, api: string): Promise<stri
 
     visitNode(sourceFile, apiDefinitionVisitor);
     
-    if (!foundNode) return;
+    if (!foundNode) {return;}
 
     let foundImport: ImportTypeNode | undefined;
 
@@ -39,7 +39,7 @@ export async function nitroRoutesParser(path: string, api: string): Promise<stri
           return;
         }
         return visitEachChild(node, importVisitor, undefined);
-    }
+    };
 
     visitNode(foundNode, importVisitor);
 
@@ -50,7 +50,7 @@ export async function nitroRoutesParser(path: string, api: string): Promise<stri
 
       const fullPath = correlatePath(document, path);
       
-      return fullPath
+      return fullPath;
     }
 
 }

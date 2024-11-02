@@ -11,7 +11,7 @@ export class ApiDefinitionProvider {
 
   async run(document: TextDocument, position: Position, token: CancellationToken): Promise<Location[] | undefined> {
     if (!this.state.nitroRoutes)
-      return;
+      {return;}
 
     const isApi = apiDetector(document, position);
     
@@ -33,7 +33,7 @@ export class ApiDefinitionProvider {
         return [{
             range: new Range(new Position(0, 0), new Position(0, 0)),
             uri: Uri.parse(file),
-        }]
+        }];
       }
     }
 

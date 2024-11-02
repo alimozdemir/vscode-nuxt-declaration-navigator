@@ -38,7 +38,7 @@ export class MainProvider implements DefinitionProvider {
       } else {
         const apiResult = await this.apiProvider.run(document, position, token);
         if (apiResult)
-          result.push(...apiResult)
+          {result.push(...apiResult);}
       }
     } catch (error) {
       console.error(error);
