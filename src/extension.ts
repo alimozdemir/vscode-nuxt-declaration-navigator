@@ -1,34 +1,32 @@
-import * as vscode from 'vscode';
 import { State } from './state';
-import { declarationProvider } from './definition.provider';
 import { configuration } from './configuration';
-import { apiDetector } from './api.detector';
 import { getNuxtFolder, joinPath } from './file';
 import { ApiHoverProvider } from './hover/api.hover';
 import { MainProvider } from './definition/main';
+import { workspace, ExtensionContext, window, languages } from 'vscode';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
 const nitroRoutes = 'types/nitro-routes.d.ts';
 
 function getWorkspaceRoot(): string | undefined {
-	const workspaceFolders = vscode.workspace.workspaceFolders;
+	const workspaceFolders = workspace.workspaceFolders;
 	if (workspaceFolders && workspaceFolders.length > 0) {
 		return workspaceFolders[0].uri.fsPath;
 	}
 	return undefined;
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
 	configuration(extensionName, context);
 
 	const state: State = {
 		commandCall: false,
-		log: vscode.window.createOutputChannel(extensionName),
+		log: window.createOutputChannel(extensionName),
 		extensionId: extensionId,
 		extensionName
 	};
-	const config = vscode.workspace.getConfiguration();
+	const config = workspace.getConfiguration();
 
 	config.update('editor.gotoLocation.multipleDefinitions', 'goto');
 	const workspaceRoot = getWorkspaceRoot();
@@ -46,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	state.log.appendLine(`${state.extensionName} is now actived (${state.extensionId})`);
 
-	const definitionProvider = vscode.languages.registerDefinitionProvider([
+	const definitionProvider = languages.registerDefinitionProvider([
 		{ scheme: 'file', language: 'javascript' },
 		{ scheme: 'file', language: 'typescript' },
 		{ scheme: 'file', language: 'javascriptreact' },
@@ -54,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 		{ scheme: 'file', language: 'vue' }
 	], new MainProvider(state));
 
-	const hover = vscode.languages.registerHoverProvider([
+	const hover = languages.registerHoverProvider([
 		{ scheme: 'file', language: 'vue' }
 	], new ApiHoverProvider(state))
 
