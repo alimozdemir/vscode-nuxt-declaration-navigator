@@ -15,10 +15,6 @@ const call3 = $fetch('/api/mytest', {
   body: JSON.stringify({ name: 'test' }),
 });
 
-const $fetchSetup = $fetchSetupA();
-const response = $fetchSetup('/api/myapi');
-
-$fetchSetupA()('/api/myapi')
 
 </script>
 

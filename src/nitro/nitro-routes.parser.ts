@@ -1,56 +1,90 @@
-import { createSourceFile, ImportTypeNode, isFunctionDeclaration, isImportDeclaration, isImportTypeNode, isPropertySignature, isStringLiteral, isVariableDeclaration, 
-  Node, ScriptTarget, SyntaxKind, visitEachChild, visitNode, Visitor } from "typescript";
-import { Position, workspace } from "vscode";
+import {
+  createSourceFile, ImportTypeNode, isFunctionDeclaration, isImportDeclaration, isImportTypeNode, isPropertySignature, isStringLiteral, isVariableDeclaration,
+  Node, PropertySignature, ScriptTarget, SyntaxKind, visitEachChild, visitNode, Visitor
+} from "typescript";
+import { workspace } from "vscode";
 import { correlatePath } from "../file";
+import { ApiResult } from "../types/api.result";
 
-export async function nitroRoutesParser(path: string, api: string): Promise<string | undefined> {
-    const document = await workspace.openTextDocument(path);  
 
-    // TODO: ts.ScriptTarget.Latest might lead to issues
-    const sourceFile = createSourceFile(
-        document.fileName,
-        document.getText(),
-        ScriptTarget.Latest,
-        true
-    );
+/// <summary>
+/// Parses the nitro-routes.ts file to find the path of the API.
+/// </summary>
+export async function nitroRoutesParser(path: string, api: ApiResult): Promise<string | undefined> {
+  const document = await workspace.openTextDocument(path);
 
-    let foundNode: Node | undefined;
+  // TODO: ts.ScriptTarget.Latest might lead to issues
+  const sourceFile = createSourceFile(
+    document.fileName,
+    document.getText(),
+    ScriptTarget.Latest,
+    true
+  );
 
-    const apiDefinitionVisitor: Visitor = node => {
-      if (isPropertySignature(node)) {
-          const assign = node.getChildAt(0);
-          if (assign && isStringLiteral(assign) && assign.getText(sourceFile) === api) {
-            foundNode = node;
-            return;
-          }
-        }
-        return visitEachChild(node, apiDefinitionVisitor, undefined);
-    };
+  let foundApi: Node | undefined;
 
-    visitNode(sourceFile, apiDefinitionVisitor);
-    
-    if (!foundNode) {return;}
+  const apiDefinitionVisitor: Visitor = node => {
+    if (isPropertySignature(node)) {
+      const assign = node.getChildAt(0);
+      if (assign && isStringLiteral(assign) && assign.getText(sourceFile) === api.path) {
+        foundApi = node;
+        return;
+      }
+    }
+    return visitEachChild(node, apiDefinitionVisitor, undefined);
+  };
 
-    let foundImport: ImportTypeNode | undefined;
+  visitNode(sourceFile, apiDefinitionVisitor);
 
-    const importVisitor: Visitor = node => {
-        if (isImportTypeNode(node)) {
-          foundImport = node;
+  if (!foundApi) { return; }
+
+
+  let foundProp: PropertySignature | undefined;
+
+  let method = api.method?.toLocaleLowerCase() ?? 'get';
+
+  const propVisitor: Visitor = node => {
+
+    if (isPropertySignature(node)) {
+      const assign = node.getChildAt(0);
+
+      if (assign && isStringLiteral(assign)) {
+        const text = assign.text.toLocaleLowerCase();
+        console.log('text', text);
+        if (text === 'default' || (method && text === method)) {
+          foundProp = node;
           return;
         }
-        return visitEachChild(node, importVisitor, undefined);
-    };
+      }
+    }
 
-    visitNode(foundNode, importVisitor);
+    return visitEachChild(node, propVisitor, undefined);
+  };
 
-    if (foundImport) {
-      const path = foundImport.argument.getText(sourceFile)
+  visitNode(foundApi, propVisitor);
+
+  if (!foundProp) { return; }
+
+  let foundImport: ImportTypeNode | undefined;
+
+  const importVisitor: Visitor = node => {
+    if (isImportTypeNode(node)) {
+      foundImport = node;
+      return;
+    }
+    return visitEachChild(node, importVisitor, undefined);
+  };
+
+  visitNode(foundProp, importVisitor);
+
+  if (foundImport) {
+    const path = foundImport.argument.getText(sourceFile)
       .replaceAll("'", "")
       .replaceAll('"', "");
 
-      const fullPath = correlatePath(document, path);
-      
-      return fullPath;
-    }
+    const fullPath = correlatePath(document, path);
+
+    return fullPath;
+  }
 
 }
