@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { State } from './state';
 import { declarationProvider } from './definition.provider';
 import { configuration } from './configuration';
+import { apiDetector } from './api.detector';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
@@ -42,6 +43,17 @@ export function activate(context: vscode.ExtensionContext) {
 		{ scheme: 'file', language: 'typescriptreact' },
 		{ scheme: 'file', language: 'vue' }
 	], declarationProvider(state));
+
+	const abc2 = vscode.languages.registerHoverProvider([
+		{ scheme: 'file', language: 'vue' }
+	], {
+		provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+
+			console.log('Hovering over', apiDetector(document, position));
+
+			return new vscode.Hover("Hello World", new vscode.Range(new vscode.Position(position.line, position.character - 5), position));
+		}
+	})
 
 	context.subscriptions.push(state.log, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);
