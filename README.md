@@ -129,3 +129,8 @@ We recommend to set `editor.gotoLocation.multipleDefinitions` to `goto` for bett
     Peek
     <img src="assets/api-peek-goto.png" alt="" />
   </p>
+
+
+  ## Improvements
+
+  - This extension can also support standalone nitro projects where just the backend.
