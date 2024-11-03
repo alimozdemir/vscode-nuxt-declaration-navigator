@@ -40,11 +40,11 @@ The goal of this extension is to cover all Nuxt/Nitro related imports. We aim to
   - This extension will help you find the definition for `$dialog` as well.
 
 - **Auto-locate server apis:**
-  - By default, nitro gives us a great support for APIs, an intellisense and configuration based on API definition, this extension will help you to locate api file.
+  - By default, Nitro provides excellent support for APIs, including IntelliSense and configuration based on API definitions. This extension enhances your development experience by helping you quickly locate and navigate to the corresponding API files.
 
   - Supported logics
     - `$fetch` and `useFetch` are supported
-    - For custom fetches (created by $fetch.create) see #config
+    - For custom fetches (created by $fetch.create) see [Settings](#settings)
     - Method: `index.{method}.ts`
     - Parameters: `[id].ts`
     - `**` wildcards (e.g. `[...slug].ts`, `[...].ts`)
@@ -56,6 +56,26 @@ We recommend to set `editor.gotoLocation.multipleDefinitions` to `goto` for bett
 <p align="center">
   <img src="assets/prompt.png" alt="" />
 </p>
+
+### Settings
+
+```json
+  "configuration": {
+    "title": "Vue/Nuxt Declaration Navigator",
+    "properties": {
+      "nuxtDeclarationNavigator.api.hover.enable": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable/disable hover on nitro APIs extension."
+      },
+      "nuxtDeclarationNavigator.api.functions": {
+        "type": "array",
+        "default": ["$fetch", "useFetch"],
+        "description": "List of functions to be considered as nitro APIs."
+      }
+    }
+  }
+```
 
 ## Examples
 

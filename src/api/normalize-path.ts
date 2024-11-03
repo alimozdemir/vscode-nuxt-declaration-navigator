@@ -1,4 +1,5 @@
-import { Node, SourceFile, isStringLiteral, isNoSubstitutionTemplateLiteral, isTemplateExpression, isBinaryExpression, SyntaxKind } from "typescript";
+import { Node, SourceFile, isStringLiteral, 
+  isNoSubstitutionTemplateLiteral, isTemplateExpression, isBinaryExpression, SyntaxKind } from "typescript";
 
 const keyword = ':param';
 

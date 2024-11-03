@@ -14,9 +14,8 @@ import { State } from '../types/state';
 /// $fetch('https://api.com'), then extract the path 'https://api.com'.
 /// </summary>
 export function apiDetector(state: State, document: TextDocument, position: Position) : ApiResult | undefined {
-  
   const functionNames = state.config.get<Array<string>>('api.functions');
-  console.log(functionNames);
+
   if (!functionNames){
     return;
   }

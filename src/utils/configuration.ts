@@ -1,4 +1,4 @@
-import { ExtensionContext, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { ExtensionContext, window, workspace, WorkspaceConfiguration, Disposable } from 'vscode';
 import { ConfigurationKey } from '../types/configuration';
 
 const multipleDefinitions = 'editor.gotoLocation.multipleDefinitions';
@@ -33,12 +33,18 @@ export async function prompt(name: string, e: ExtensionContext) {
 
 const key = 'nuxtDeclarationNavigator';
 
-export class ConfigurationService {
+export class ConfigurationService implements Disposable {
   private config: WorkspaceConfiguration;
+  private updateDisposable: Disposable;
 
   constructor() {
     this.config = workspace.getConfiguration(key);
-    workspace.onDidChangeConfiguration(this.updateConfiguration, this);
+    this.updateDisposable = 
+      workspace.onDidChangeConfiguration(this.updateConfiguration, this);
+  }
+
+  dispose() {
+    this.updateDisposable.dispose();
   }
 
   private updateConfiguration() {
@@ -51,5 +57,13 @@ export class ConfigurationService {
 
   async update(path: ConfigurationKey, value: any): Promise<void> {
     await this.config.update(path, value);
+  }
+
+  watch<T>(path: ConfigurationKey, callback: (value?: T) => void) {
+    return workspace.onDidChangeConfiguration(e => {
+      if (e.affectsConfiguration(`${key}.${path}`)) {
+        callback(this.config.get<T>(path));
+      } 
+    })
   }
 }

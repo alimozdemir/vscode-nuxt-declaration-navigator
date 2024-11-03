@@ -3,7 +3,7 @@ import { ConfigurationService, prompt } from './utils/configuration';
 import { getNuxtFolder, joinPath } from './utils/file';
 import { ApiHoverProvider } from './hover/api.hover';
 import { MainProvider } from './definition/main';
-import { workspace, ExtensionContext, window, languages, DocumentSelector } from 'vscode';
+import { workspace, ExtensionContext, window, languages, DocumentSelector, Disposable } from 'vscode';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
@@ -57,9 +57,30 @@ export function activate(context: ExtensionContext) {
 
 	const definitionProvider = languages.registerDefinitionProvider(selectors, new MainProvider(state));
 
-	const hover = languages.registerHoverProvider(selectors, new ApiHoverProvider(state));
 
-	context.subscriptions.push(state.log, hover, definitionProvider);
+	const hoverProvider = new ApiHoverProvider(state);
+	let hover: Disposable | undefined;
+
+	if (state.config.get<boolean>('api.hover.enable')) {
+		hover = languages.registerHoverProvider(selectors, hoverProvider);
+		context.subscriptions.push(hover);
+	}
+
+	const watchDisposable = state.config.watch<boolean>('api.hover.enable', (value) => {
+		if (!value) {
+			if (hover) {
+				hover.dispose();
+				hover = undefined;
+			}
+		} else {
+			if (!hover) {
+				hover = languages.registerHoverProvider(selectors, hoverProvider);
+				context.subscriptions.push(hover);
+			}
+		}
+	});
+
+	context.subscriptions.push(state.log, state.config, watchDisposable, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);
 }
 
