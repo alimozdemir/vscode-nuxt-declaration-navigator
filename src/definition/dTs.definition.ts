@@ -1,6 +1,6 @@
 import { Location, LocationLink, Position, Range, TextDocument, Uri, workspace } from "vscode";
-import { State } from "../state";
-import { correlatePath, findFile } from "../file";
+import { State } from "../types/state";
+import { correlatePath, findFile } from "../utils/file";
 import { createSourceFile, isFunctionDeclaration, isImportDeclaration, isVariableDeclaration, ScriptTarget, visitEachChild, visitNode, Visitor } from "typescript";
 
 export class dTsDefinitionProvider {

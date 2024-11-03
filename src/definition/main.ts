@@ -1,7 +1,7 @@
 import { CancellationToken, Definition, DefinitionLink, DefinitionProvider, Location, Position, TextDocument } from "vscode";
-import { State } from "../state";
+import { State } from "../types/state";
 import { dTsDefinitionProvider } from "./dTs.definition";
-import { defaultProvider } from "../vscode.helper";
+import { defaultProvider } from "../utils/vscode.helper";
 import { ApiDefinitionProvider } from "./api.definition";
 
 export class MainProvider implements DefinitionProvider {

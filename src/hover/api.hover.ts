@@ -1,7 +1,7 @@
 import { HoverProvider, TextDocument, Position, CancellationToken, ProviderResult, Hover, workspace, Range, Uri, MarkdownString } from "vscode";
-import { State } from "../state";
+import { State } from "../types/state";
 import { nitroRoutesParser } from "../api/nitro/nitro-routes.parser";
-import { correlatePath, findFile } from "../file";
+import { correlatePath, findFile } from "../utils/file";
 import { apiDetector } from "../api/api.detector";
 
 export class ApiHoverProvider implements HoverProvider {

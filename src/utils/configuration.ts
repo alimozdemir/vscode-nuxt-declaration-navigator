@@ -6,6 +6,11 @@ const confirmSetting = 'editor.gotoLocation.confirmPeek';
 export async function configuration(name: string, e: ExtensionContext) {
   const config = workspace.getConfiguration();
 
+  const settings = workspace.getConfiguration(name);
+
+  console.log(config.get('nuxtDeclarationNavigator.api.hover.enable'));
+  console.log(config.get('nuxtDeclarationNavigator.api.functions'));
+
   if (e.globalState.get(confirmSetting))
     {return;}
 

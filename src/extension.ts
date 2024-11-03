@@ -1,6 +1,6 @@
-import { State } from './state';
-import { configuration } from './configuration';
-import { getNuxtFolder, joinPath } from './file';
+import { State } from './types/state';
+import { configuration } from './utils/configuration';
+import { getNuxtFolder, joinPath } from './utils/file';
 import { ApiHoverProvider } from './hover/api.hover';
 import { MainProvider } from './definition/main';
 import { workspace, ExtensionContext, window, languages, DocumentSelector } from 'vscode';

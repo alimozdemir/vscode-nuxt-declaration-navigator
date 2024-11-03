@@ -3,7 +3,7 @@ import {
   Node, PropertySignature, ScriptTarget, SyntaxKind, visitEachChild, visitNode, Visitor
 } from "typescript";
 import { workspace } from "vscode";
-import { correlatePath } from "../../file";
+import { correlatePath } from "../../utils/file";
 import { ApiResult } from "../../types/api.result";
 import { NitroResult } from "../../types/nitro.result";
 import { normalizeNitroPath } from "../normalize-path";

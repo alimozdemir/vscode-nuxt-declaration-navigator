@@ -32,6 +32,23 @@
   ],
   "main": "./dist/extension.js",
   "icon": "assets/icon.png",
+  "contributes": {
+    "configuration": {
+      "title": "Vue/Nuxt Declaration Navigator",
+      "properties": {
+        "nuxtDeclarationNavigator.api.hover.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable hover on nitro APIs extension."
+        },
+        "nuxtDeclarationNavigator.api.functions": {
+          "type": "array",
+          "default": ["$fetch", "useFetch"],
+          "description": "List of functions to be considered as nitro APIs."
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "yarn run package",
     "compile": "yarn run check-types && yarn run lint && node esbuild.js",
