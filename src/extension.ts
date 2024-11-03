@@ -3,7 +3,7 @@ import { configuration } from './configuration';
 import { getNuxtFolder, joinPath } from './file';
 import { ApiHoverProvider } from './hover/api.hover';
 import { MainProvider } from './definition/main';
-import { workspace, ExtensionContext, window, languages } from 'vscode';
+import { workspace, ExtensionContext, window, languages, DocumentSelector } from 'vscode';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
@@ -18,14 +18,25 @@ function getWorkspaceRoot(): string | undefined {
 }
 
 export function activate(context: ExtensionContext) {
-	configuration(extensionName, context);
-
 	const state: State = {
 		commandCall: false,
 		log: window.createOutputChannel(extensionName),
 		extensionId: extensionId,
 		extensionName
 	};
+
+	console.log(`${state.extensionName} is now actived (${state.extensionId})`);
+
+	const selectors : DocumentSelector = [
+		{ scheme: 'file', language: 'javascript' },
+		{ scheme: 'file', language: 'typescript' },
+		{ scheme: 'file', language: 'javascriptreact' },
+		{ scheme: 'file', language: 'typescriptreact' },
+		{ scheme: 'file', language: 'vue' }
+	];
+
+	configuration(extensionName, context);
+
 	const config = workspace.getConfiguration();
 
 	config.update('editor.gotoLocation.multipleDefinitions', 'goto');
@@ -40,21 +51,12 @@ export function activate(context: ExtensionContext) {
 		});
 	}
 
-	console.log(`${state.extensionName} is now actived (${state.extensionId})`);
 
 	state.log.appendLine(`${state.extensionName} is now actived (${state.extensionId})`);
 
-	const definitionProvider = languages.registerDefinitionProvider([
-		{ scheme: 'file', language: 'javascript' },
-		{ scheme: 'file', language: 'typescript' },
-		{ scheme: 'file', language: 'javascriptreact' },
-		{ scheme: 'file', language: 'typescriptreact' },
-		{ scheme: 'file', language: 'vue' }
-	], new MainProvider(state));
+	const definitionProvider = languages.registerDefinitionProvider(selectors, new MainProvider(state));
 
-	const hover = languages.registerHoverProvider([
-		{ scheme: 'file', language: 'vue' }
-	], new ApiHoverProvider(state));
+	const hover = languages.registerHoverProvider(selectors, new ApiHoverProvider(state));
 
 	context.subscriptions.push(state.log, hover, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);

@@ -15,7 +15,18 @@ const functionNames = ['$fetch', 'useFetch', '$fetchSetup'];
 /// $fetch('https://api.com'), then extract the path 'https://api.com'.
 /// </summary>
 export function apiDetector(document: TextDocument, position: Position) : ApiResult | undefined {
-  const lookingFor = document.getText(document.getWordRangeAtPosition(position));
+  const wordRange = document.getWordRangeAtPosition(position);
+
+  if (!wordRange) {
+    return;
+  }
+
+  const lookingFor = document.getText(wordRange);
+
+  if (!lookingFor) {
+    return;
+  }
+
   const sourceFile = createSourceFile(
     document.fileName,
     document.getText(),
@@ -37,8 +48,9 @@ export function apiDetector(document: TextDocument, position: Position) : ApiRes
   }
 
   findNode(sourceFile);
-
+  
   if (foundNode && foundNode.arguments.length > 0) {
+    // we will have the complete fetch call code
     const arg = foundNode.arguments[0];
     const argText = arg.getText(sourceFile);
 

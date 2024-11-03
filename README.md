@@ -4,7 +4,7 @@
 
 # Vue/Nuxt Declaration Navigator
 
-A VSCode extension for navigating `*.d.ts` files, designed to enhance Nuxt projects by auto-locating and navigating to auto-imported components and functions.
+A VSCode extension for navigating `*.d.ts` files, designed to enhance Nuxt projects by auto-locating and navigating to auto-imported components, functions and routes.
 
 ## Motivation
 
