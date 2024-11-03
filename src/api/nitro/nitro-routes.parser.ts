@@ -29,9 +29,17 @@ export async function nitroRoutesParser(path: string, api: ApiResult): Promise<N
     if (isPropertySignature(node)) {
       const assign = node.getChildAt(0);
       if (assign && isStringLiteral(assign)) {
-        if (normalizeNitroPath(assign.text) === api.path) {
+        const normalizedPath = normalizeNitroPath(assign.text);
+        if (normalizedPath === api.path) {
           foundApi = node;
           return;
+        } else if (normalizedPath.includes('**')) {
+          const path = normalizedPath.slice(0, assign.text.indexOf('**'));
+          
+          if (api.path.startsWith(path)) {
+            foundApi = node;
+            return;
+          }
         }
 
       }

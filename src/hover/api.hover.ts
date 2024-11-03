@@ -17,6 +17,9 @@ export class ApiHoverProvider implements HoverProvider {
     const isApi = apiDetector(document, position);
     
     if (isApi) {
+
+      this.state.log.appendLine(`Hovering over ${isApi.path}`);
+
       const result = await nitroRoutesParser(this.state.nitroRoutes, isApi);
       if (result) {
 

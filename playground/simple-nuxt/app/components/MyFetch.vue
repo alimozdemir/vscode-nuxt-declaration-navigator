@@ -27,10 +27,10 @@ const call9 = $fetch("/api/blog/" + id)
 
 const call10 = $fetch(`/api/blog/${id}`)
 
-const call11 = $fetch(`/api/blog/${id}/new`)
+const call11 = $fetch(`/api/blog/${id}/my-slug`)
 
 const call12 = $fetch("/api/blog/" + id + '/new')
-const call13 = $fetch("/api/blog/" + id + '/new/' + id + '/abc')
+const call13 = $fetch("/api/blog/" + id + '/' + id)
 </script>
 
 <template>
