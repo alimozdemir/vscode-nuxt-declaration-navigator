@@ -3,7 +3,7 @@
   "name": "vscode-nuxt-declaration-navigator",
   "displayName": "Vue/Nuxt Declaration Navigator",
   "description": "A VSCode extension for navigating *.d.ts files, designed to enhance Nuxt projects by auto-locating and navigating to auto-imported components and functions.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/alimozdemir/vscode-nuxt-declaration-navigator#readme",
   "repository": {
     "type": "git",
