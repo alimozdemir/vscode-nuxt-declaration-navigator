@@ -1,8 +1,8 @@
 import { TextDocument, Position, CancellationToken, Range, Uri, Location } from "vscode";
 import { State } from "../state";
-import { apiDetector } from "../api.detector";
-import { nitroRoutesParser } from "../nitro/nitro-routes.parser";
+import { nitroRoutesParser } from "../api/nitro/nitro-routes.parser";
 import { correlatePath, findFile } from "../file";
+import { apiDetector } from "../api/api.detector";
 
 export class ApiDefinitionProvider {
 
@@ -19,7 +19,7 @@ export class ApiDefinitionProvider {
       const result = await nitroRoutesParser(this.state.nitroRoutes, isApi);
       if (result) {
 
-        const fullPath = correlatePath(document, result, this.state.workspaceRoot);
+        const fullPath = correlatePath(document, result.path, this.state.workspaceRoot);
         const file = await findFile(fullPath, ['.ts', '.js']);
 
         this.state.log.appendLine(`Hovering over ${isApi.path} at ${fullPath}`);

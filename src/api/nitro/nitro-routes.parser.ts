@@ -3,14 +3,16 @@ import {
   Node, PropertySignature, ScriptTarget, SyntaxKind, visitEachChild, visitNode, Visitor
 } from "typescript";
 import { workspace } from "vscode";
-import { correlatePath } from "../file";
-import { ApiResult } from "../types/api.result";
+import { correlatePath } from "../../file";
+import { ApiResult } from "../../types/api.result";
+import { NitroResult } from "../../types/nitro.result";
+import { normalizeNitroPath } from "../normalize-path";
 
 
 /// <summary>
 /// Parses the nitro-routes.ts file to find the path of the API.
 /// </summary>
-export async function nitroRoutesParser(path: string, api: ApiResult): Promise<string | undefined> {
+export async function nitroRoutesParser(path: string, api: ApiResult): Promise<NitroResult | undefined> {
   const document = await workspace.openTextDocument(path);
 
   // TODO: ts.ScriptTarget.Latest might lead to issues
@@ -26,9 +28,12 @@ export async function nitroRoutesParser(path: string, api: ApiResult): Promise<s
   const apiDefinitionVisitor: Visitor = node => {
     if (isPropertySignature(node)) {
       const assign = node.getChildAt(0);
-      if (assign && isStringLiteral(assign) && assign.getText(sourceFile) === api.path) {
-        foundApi = node;
-        return;
+      if (assign && isStringLiteral(assign)) {
+        if (normalizeNitroPath(assign.text) === api.path) {
+          foundApi = node;
+          return;
+        }
+
       }
     }
     return visitEachChild(node, apiDefinitionVisitor, undefined);
@@ -83,7 +88,10 @@ export async function nitroRoutesParser(path: string, api: ApiResult): Promise<s
 
     const fullPath = correlatePath(document, path);
 
-    return fullPath;
+    return {
+      originalPath: fullPath,
+      path: normalizeNitroPath(fullPath)
+    };
   }
 
 }

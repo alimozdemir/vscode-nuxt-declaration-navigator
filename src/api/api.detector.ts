@@ -1,15 +1,11 @@
 import { TextDocument, Position } from 'vscode';
 import { createSourceFile, ScriptTarget, Node, isCallExpression, 
   forEachChild, isIdentifier, CallExpression, 
-  SyntaxKind,
   isObjectLiteralExpression,
   ObjectLiteralExpression,
-  isStringLiteral,
-  SourceFile,
-  isTemplateExpression,
-  isBinaryExpression,
-  isNoSubstitutionTemplateLiteral} from 'typescript';
-import { ApiResult } from './types/api.result';
+  isStringLiteral} from 'typescript';
+import { ApiResult } from '../types/api.result';
+import { normalizePath } from './normalize-path';
 
 const functionNames = ['$fetch', 'useFetch', '$fetchSetup'];
 
@@ -45,8 +41,6 @@ export function apiDetector(document: TextDocument, position: Position) : ApiRes
   if (foundNode && foundNode.arguments.length > 0) {
     const arg = foundNode.arguments[0];
     const argText = arg.getText(sourceFile);
-    console.log('argText', argText);
-    console.log('normalized', normalizePath(arg, sourceFile))
 
     let method: string | undefined = undefined;
 
@@ -70,37 +64,11 @@ export function apiDetector(document: TextDocument, position: Position) : ApiRes
 
     if (argText.includes(lookingFor)) {
       return {
-        path: argText,
+        originalPath: argText,
+        path: normalizePath(arg, sourceFile),
         method
       };
     }
   }
 }
 
-function normalizePath(node: Node, sourceFile: SourceFile): string {
-  if (isStringLiteral(node) || isNoSubstitutionTemplateLiteral(node)) {
-    return node.text;
-  }
-
-  if (isTemplateExpression(node)) {
-    let result = node.head.text;
-    console.log('isTemplateExpression', result);
-    node.templateSpans.forEach(span => {
-        result += ':param' + span.literal.text;
-    });
-    return result;
-  }
-
-  if (isBinaryExpression(node) && node.operatorToken.kind === SyntaxKind.PlusToken) {
-      const left = normalizePath(node.left, sourceFile);
-      const right = normalizePath(node.right, sourceFile);
-      console.log('isBinaryExpression', node.left.kind, right);
-      if (left.endsWith(':param') || right.startsWith(':param')) {
-        return left + right;
-      } else {
-        return left + ':param' + right;
-      }
-  }
-
-  return '';
-}
