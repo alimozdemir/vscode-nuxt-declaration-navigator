@@ -64,6 +64,6 @@ export class ConfigurationService implements Disposable {
       if (e.affectsConfiguration(`${key}.${path}`)) {
         callback(this.config.get<T>(path));
       } 
-    })
+    });
   }
 }

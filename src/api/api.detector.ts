@@ -43,7 +43,7 @@ export function apiDetector(state: State, document: TextDocument, position: Posi
   let foundNode: CallExpression | undefined;
 
 
-  const findNode = (node: Node) =>{
+  const findNode = (node: Node) => {
     if (offset >= node.getStart() && offset < node.getEnd()) {
       if (isCallExpression(node) && isIdentifier(node.expression) && 
         (functionNames.includes(node.expression.text))) {
@@ -52,7 +52,7 @@ export function apiDetector(state: State, document: TextDocument, position: Posi
       }
       forEachChild(node, findNode);
     }
-  }
+  };
 
   findNode(sourceFile);
   
