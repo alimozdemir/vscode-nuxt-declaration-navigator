@@ -39,6 +39,15 @@ The goal of this extension is to cover all Nuxt/Nitro related imports. We aim to
 
   - This extension will help you find the definition for `$dialog` as well.
 
+- **Auto-locate server apis:**
+  - By default, nitro gives us a great support for APIs, an intellisense and configuration based on API definition, this extension will help you to locate api file.
+
+  - Supported logics
+    - `$fetch` and `useFetch` are supported
+    - For custom fetches (created by $fetch.create) see #config
+    - Method: `index.{method}.ts`
+    - Parameters: `[id].ts`
+    - `**` wildcards (e.g. `[...slug].ts`, `[...].ts`)
 
 ## Configuration
 
@@ -47,3 +56,56 @@ We recommend to set `editor.gotoLocation.multipleDefinitions` to `goto` for bett
 <p align="center">
   <img src="assets/prompt.png" alt="" />
 </p>
+
+## Examples
+
+- **Auto-locate and navigate to auto-imported components and functions in Nuxt projects:**
+
+
+- **Auto-locate server apis:**
+  - These are all supported syntaxes, once you hover you will be able to see the first 3 lines of the API file
+
+  ```typescript
+  $fetch('/api/myapi');
+
+  useFetch('/api/myapi')
+
+  $fetch('/api/change', {
+      method: 'POST',
+      body: JSON.stringify({ name: 'test' }),
+  })
+
+  $fetch('/api/change', {
+      method: 'GET',
+      body: JSON.stringify({ name: 'test' }),
+  })
+
+  $fetch('/api/change')
+
+  const id = 1;
+
+  $fetch(`/api/blog/` + id)
+
+  $fetch('/api/blog/' + id)
+
+  $fetch("/api/blog/" + id)
+
+  $fetch(`/api/blog/${id}`)
+
+  $fetch(`/api/blog/${id}/my-slug`)
+
+  $fetch("/api/blog/" + id + '/new')
+
+  $fetch("/api/blog/" + id + '/' + id)
+
+  useFetch('/api/blog/' + id + '/my-blog-slug/and-more')
+  ```
+  <p align="center">
+    Hover
+    <img src="assets/api-hover.png" alt="" />
+  </p>
+
+  <p align="center">
+    Peek
+    <img src="assets/api-peek-goto.png" alt="" />
+  </p>
