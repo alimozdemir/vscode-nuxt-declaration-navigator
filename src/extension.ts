@@ -1,5 +1,5 @@
 import { State } from './types/state';
-import { configuration } from './utils/configuration';
+import { ConfigurationService, prompt } from './utils/configuration';
 import { getNuxtFolder, joinPath } from './utils/file';
 import { ApiHoverProvider } from './hover/api.hover';
 import { MainProvider } from './definition/main';
@@ -20,6 +20,7 @@ function getWorkspaceRoot(): string | undefined {
 export function activate(context: ExtensionContext) {
 	const state: State = {
 		commandCall: false,
+		config: new ConfigurationService(),
 		log: window.createOutputChannel(extensionName),
 		extensionId: extensionId,
 		extensionName
@@ -35,7 +36,7 @@ export function activate(context: ExtensionContext) {
 		{ scheme: 'file', language: 'vue' }
 	];
 
-	configuration(extensionName, context);
+	prompt(extensionName, context);
 
 	const config = workspace.getConfiguration();
 

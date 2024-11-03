@@ -13,7 +13,7 @@ export class ApiDefinitionProvider {
     if (!this.state.nitroRoutes)
       {return;}
 
-    const isApi = apiDetector(document, position);
+    const isApi = apiDetector(this.state, document, position);
     
     if (isApi) {
       const result = await nitroRoutesParser(this.state.nitroRoutes, isApi);

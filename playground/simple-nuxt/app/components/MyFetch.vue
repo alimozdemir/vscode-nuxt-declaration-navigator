@@ -34,6 +34,10 @@ $fetch("/api/blog/" + id + '/new')
 $fetch("/api/blog/" + id + '/' + id)
 
 useFetch('/api/blog/' + id + '/my-blog-slug/and-more')
+
+const myFetch = $fetchSetup();
+
+myFetch('/api/myapi');
 </script>
 
 <template>

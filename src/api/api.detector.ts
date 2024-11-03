@@ -6,15 +6,21 @@ import { createSourceFile, ScriptTarget, Node, isCallExpression,
   isStringLiteral} from 'typescript';
 import { ApiResult } from '../types/api.result';
 import { normalizePath } from './normalize-path';
-
-const functionNames = ['$fetch', 'useFetch', '$fetchSetup'];
+import { State } from '../types/state';
 
 /// <summary>
 /// Detects the API call in the document.
 /// e.g. given document and position, it will find 
 /// $fetch('https://api.com'), then extract the path 'https://api.com'.
 /// </summary>
-export function apiDetector(document: TextDocument, position: Position) : ApiResult | undefined {
+export function apiDetector(state: State, document: TextDocument, position: Position) : ApiResult | undefined {
+  
+  const functionNames = state.config.get<Array<string>>('api.functions');
+  console.log(functionNames);
+  if (!functionNames){
+    return;
+  }
+  
   const wordRange = document.getWordRangeAtPosition(position);
 
   if (!wordRange) {
@@ -36,7 +42,9 @@ export function apiDetector(document: TextDocument, position: Position) : ApiRes
 
   const offset = document.offsetAt(position);
   let foundNode: CallExpression | undefined;
-  function findNode(node: Node) {
+
+
+  const findNode = (node: Node) =>{
     if (offset >= node.getStart() && offset < node.getEnd()) {
       if (isCallExpression(node) && isIdentifier(node.expression) && 
         (functionNames.includes(node.expression.text))) {

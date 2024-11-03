@@ -1,4 +1,5 @@
 import { OutputChannel } from 'vscode';
+import { ConfigurationService } from '../utils/configuration';
 
 export interface State {
     commandCall: boolean;
@@ -8,4 +9,5 @@ export interface State {
     workspaceRoot?: string;
     nuxtFolder?: string;
     nitroRoutes?: string;
+    config: ConfigurationService;
 }

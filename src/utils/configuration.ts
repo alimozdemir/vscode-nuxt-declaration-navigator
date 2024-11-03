@@ -1,15 +1,11 @@
-import { ExtensionContext, window, workspace } from 'vscode';
+import { ExtensionContext, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { ConfigurationKey } from '../types/configuration';
 
 const multipleDefinitions = 'editor.gotoLocation.multipleDefinitions';
 const confirmSetting = 'editor.gotoLocation.confirmPeek';
 
-export async function configuration(name: string, e: ExtensionContext) {
+export async function prompt(name: string, e: ExtensionContext) {
   const config = workspace.getConfiguration();
-
-  const settings = workspace.getConfiguration(name);
-
-  console.log(config.get('nuxtDeclarationNavigator.api.hover.enable'));
-  console.log(config.get('nuxtDeclarationNavigator.api.functions'));
 
   if (e.globalState.get(confirmSetting))
     {return;}
@@ -33,4 +29,27 @@ export async function configuration(name: string, e: ExtensionContext) {
   }
 
   e.globalState.update(confirmSetting, true);
+}
+
+const key = 'nuxtDeclarationNavigator';
+
+export class ConfigurationService {
+  private config: WorkspaceConfiguration;
+
+  constructor() {
+    this.config = workspace.getConfiguration(key);
+    workspace.onDidChangeConfiguration(this.updateConfiguration, this);
+  }
+
+  private updateConfiguration() {
+    this.config = workspace.getConfiguration(key);
+  }
+
+  get<T>(path: ConfigurationKey): T | undefined {
+    return this.config.get<T>(path);
+  }
+
+  async update(path: ConfigurationKey, value: any): Promise<void> {
+    await this.config.update(path, value);
+  }
 }
