@@ -6,6 +6,16 @@ const { $dialog } = useNuxtApp();
 const com = computed(() => '');
 
 const call = $fetch('/api/myapi');
+
+const call2 = $fetch('/api/mytest');
+
+
+const call3 = $fetch('/api/mytest', {
+  method: 'POST',
+  body: JSON.stringify({ name: 'test' }),
+});
+
+
 </script>
 
 <template>

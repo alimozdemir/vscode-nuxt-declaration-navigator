@@ -3,7 +3,7 @@
   "name": "vscode-nuxt-declaration-navigator",
   "displayName": "Vue/Nuxt Declaration Navigator",
   "description": "A VSCode extension for navigating *.d.ts files, designed to enhance Nuxt projects by auto-locating and navigating to auto-imported components and functions.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/alimozdemir/vscode-nuxt-declaration-navigator#readme",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
   "keywords": [
     "nuxt",
     "vue",
+    "nitro",
     "peek",
     "definition",
     "goto"
@@ -31,6 +32,23 @@
   ],
   "main": "./dist/extension.js",
   "icon": "assets/icon.png",
+  "contributes": {
+    "configuration": {
+      "title": "Vue/Nuxt Declaration Navigator",
+      "properties": {
+        "nuxtDeclarationNavigator.api.hover.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable hover on nitro APIs extension."
+        },
+        "nuxtDeclarationNavigator.api.functions": {
+          "type": "array",
+          "default": ["$fetch", "useFetch"],
+          "description": "List of functions to be considered as nitro APIs."
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "yarn run package",
     "compile": "yarn run check-types && yarn run lint && node esbuild.js",

@@ -1,49 +1,86 @@
-import * as vscode from 'vscode';
-import { State } from './state';
-import { declarationProvider } from './definition.provider';
-import { configuration } from './configuration';
+import { State } from './types/state';
+import { ConfigurationService, prompt } from './utils/configuration';
+import { getNuxtFolder, joinPath } from './utils/file';
+import { ApiHoverProvider } from './hover/api.hover';
+import { MainProvider } from './definition/main';
+import { workspace, ExtensionContext, window, languages, DocumentSelector, Disposable } from 'vscode';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
+const nitroRoutes = 'types/nitro-routes.d.ts';
 
 function getWorkspaceRoot(): string | undefined {
-	const workspaceFolders = vscode.workspace.workspaceFolders;
+	const workspaceFolders = workspace.workspaceFolders;
 	if (workspaceFolders && workspaceFolders.length > 0) {
-			return workspaceFolders[0].uri.fsPath;
+		return workspaceFolders[0].uri.fsPath;
 	}
 	return undefined;
 }
 
-export function activate(context: vscode.ExtensionContext) {
-	configuration(extensionName, context);
-
+export function activate(context: ExtensionContext) {
 	const state: State = {
 		commandCall: false,
-		log: vscode.window.createOutputChannel(extensionName),
+		config: new ConfigurationService(),
+		log: window.createOutputChannel(extensionName),
 		extensionId: extensionId,
 		extensionName
 	};
-	const config = vscode.workspace.getConfiguration();
-
-	config.update('editor.gotoLocation.multipleDefinitions', 'goto');
-	const workspaceRoot = getWorkspaceRoot();
-
-	if (workspaceRoot)
-		{state.workspaceRoot = workspaceRoot;}
 
 	console.log(`${state.extensionName} is now actived (${state.extensionId})`);
 
-	state.log.appendLine(`${state.extensionName} is now actived (${state.extensionId})`);
-
-	const definitionProvider = vscode.languages.registerDefinitionProvider([
+	const selectors : DocumentSelector = [
 		{ scheme: 'file', language: 'javascript' },
 		{ scheme: 'file', language: 'typescript' },
 		{ scheme: 'file', language: 'javascriptreact' },
 		{ scheme: 'file', language: 'typescriptreact' },
 		{ scheme: 'file', language: 'vue' }
-	], declarationProvider(state));
+	];
 
-	context.subscriptions.push(state.log, definitionProvider);
+	prompt(extensionName, context);
+
+	const config = workspace.getConfiguration();
+
+	config.update('editor.gotoLocation.multipleDefinitions', 'goto');
+	const workspaceRoot = getWorkspaceRoot();
+
+	if (workspaceRoot) {
+		state.workspaceRoot = workspaceRoot;
+
+		getNuxtFolder(state.workspaceRoot).then((folder) => {
+			state.nuxtFolder = folder;
+			state.nitroRoutes = folder ? joinPath(folder, nitroRoutes) : undefined;
+		});
+	}
+
+
+	state.log.appendLine(`${state.extensionName} is now actived (${state.extensionId})`);
+
+	const definitionProvider = languages.registerDefinitionProvider(selectors, new MainProvider(state));
+
+
+	const hoverProvider = new ApiHoverProvider(state);
+	let hover: Disposable | undefined;
+
+	if (state.config.get<boolean>('api.hover.enable')) {
+		hover = languages.registerHoverProvider(selectors, hoverProvider);
+		context.subscriptions.push(hover);
+	}
+
+	const watchDisposable = state.config.watch<boolean>('api.hover.enable', (value) => {
+		if (!value) {
+			if (hover) {
+				hover.dispose();
+				hover = undefined;
+			}
+		} else {
+			if (!hover) {
+				hover = languages.registerHoverProvider(selectors, hoverProvider);
+				context.subscriptions.push(hover);
+			}
+		}
+	});
+
+	context.subscriptions.push(state.log, state.config, watchDisposable, definitionProvider);
 	console.log(`${state.extensionName} is now ready to use!`);
 }
 
