@@ -9,5 +9,7 @@ export const useText = () => {
     $fetch('/api/change', {
         method: 'POST'
     })
+
+    return true;
 };
 

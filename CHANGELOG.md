@@ -18,4 +18,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.1.1]
 
-- Uri.file fix
+- fix: Uri.file
+
+## [1.1.2]
+
+- fix: windows path

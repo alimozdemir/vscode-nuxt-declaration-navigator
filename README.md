@@ -79,9 +79,6 @@ We recommend to set `editor.gotoLocation.multipleDefinitions` to `goto` for bett
 
 ## Examples
 
-- **Auto-locate and navigate to auto-imported components and functions in Nuxt projects:**
-
-
 - **Auto-locate server apis:**
   - These are all supported syntaxes, once you hover you will be able to see the first 3 lines of the API file
 
