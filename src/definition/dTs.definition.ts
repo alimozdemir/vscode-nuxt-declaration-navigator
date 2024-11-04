@@ -48,7 +48,7 @@ export class dTsDefinitionProvider {
             
             result.push({
                 range: new Range(position, position),
-                uri: Uri.parse(foundFile),
+                uri: Uri.file(foundFile),
             });
         }
     }
@@ -94,7 +94,7 @@ export class dTsDefinitionProvider {
     if (foundFile) {
         result.push({
             range: new Range(new Position(0, 0), new Position(0, 0)),
-            uri: Uri.parse(foundFile),
+            uri: Uri.file(foundFile),
         });
     }
   

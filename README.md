@@ -134,3 +134,5 @@ We recommend to set `editor.gotoLocation.multipleDefinitions` to `goto` for bett
   ## Improvements
 
   - This extension can also support standalone nitro projects where just the backend.
+  - Nuxt Layout support
+  - Nuxt Middleware support

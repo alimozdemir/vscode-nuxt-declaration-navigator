@@ -32,7 +32,7 @@ export class ApiDefinitionProvider {
 
         return [{
             range: new Range(new Position(0, 0), new Position(0, 0)),
-            uri: Uri.parse(file),
+            uri: Uri.file(file),
         }];
       }
     }

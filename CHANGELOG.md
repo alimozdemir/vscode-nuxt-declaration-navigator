@@ -15,3 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - nuxtDeclarationNavigator.api.hover.enable [true/false]
   - nuxtDeclarationNavigator.api.functions [$fetch, useFetch]
 - README updated
+
+## [1.1.1]
+
+- Uri.file fix
