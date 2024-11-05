@@ -22,7 +22,6 @@ export class ApiHoverProvider implements HoverProvider {
 
       const result = await nitroRoutesParser(this.state.nitroRoutes, isApi);
       if (result) {
-
         const fullPath = correlatePath(document, result.path, this.state.workspaceRoot);
         const file = await findFile(fullPath, ['.ts', '.js']);
 
