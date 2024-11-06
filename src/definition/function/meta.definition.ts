@@ -50,6 +50,8 @@ export class MetaDefinitionProvider implements FunctionProvider {
     
     const layouts = this.traverser.getAllLayouts(this.state.nuxtProject!);
     
+    console.log(this.state.nuxtProject)
+
     const layout = layouts.find(l => l.key === key);
 
     return layout ? [{

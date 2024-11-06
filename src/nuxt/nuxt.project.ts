@@ -44,27 +44,32 @@ export class NuxtProject {
   private async findLayouts() {
     if (!this.nuxtConfig) return;
 
-    let path = '/layouts';
+
+
+    const findLayoutsOnPath = async (path: string) => {
+      const p = joinPath(this.nuxtPath, path);
+
+      if (!await folderExists(p))
+        return;
+  
+      const files = await getFiles(p, '.vue');
+  
+      for (const file of files) {
+        this.layouts.push({
+          key: nuxtLayoutPathToKey(file.replace(p, '')),
+          path: file
+        });
+      }
+    }
+
+    // Not sure about this behavior, when the version is 4, the layouts are on /app/layouts
+    // but it looks like nuxt still looking for both paths
+    await findLayoutsOnPath('/layouts');
 
     if (this.nuxtConfig.version == 4) {
-      path = '/app/layouts';
+      await findLayoutsOnPath('/layouts');
+      await findLayoutsOnPath('/app/layouts');
     }
-
-    path = joinPath(this.nuxtPath, path);
-
-    if (!await folderExists(path))
-      return;
-
-    const files = await getFiles(path, '.vue');
-
-    for (const file of files) {
-      this.layouts.push({
-        key: nuxtLayoutPathToKey(file.replace(path, '')),
-        path: file
-      });
-    }
-
-    console.log(this.layouts)
   }
 
 }
