@@ -1,5 +1,7 @@
-import { Node, ExportAssignment, SyntaxKind, isExportAssignment, CallExpression, isCallExpression, forEachChild, isIdentifier, isObjectLiteralExpression, Expression, ObjectLiteralExpression, ObjectLiteralElementLike } from "typescript";
-
+import { Node, CallExpression, isCallExpression, forEachChild, 
+  isIdentifier, isObjectLiteralExpression, Expression, ObjectLiteralExpression, ObjectLiteralElementLike, SyntaxKind, 
+  isPropertyAssignment,
+  PropertyAssignment} from "typescript";
 
 export function findFunctionNearest(node: Node, offset?: number): CallExpression | undefined {
 
@@ -18,6 +20,35 @@ export function findFunctionNearest(node: Node, offset?: number): CallExpression
     }
     else {
       if (isCallExpression(node) && isIdentifier(node.expression)) {
+        foundNode = node;
+        return;
+      }
+
+      forEachChild(node, findNode);
+    }
+  };
+
+  findNode(node);
+
+  return foundNode;
+}
+
+export function findAssignment(node: Node, offset?: number): PropertyAssignment | undefined {
+  let foundNode: PropertyAssignment | undefined;
+
+  const findNode = (node: Node) => {
+    if (offset) {
+      if (offset >= node.getStart() && offset < node.getEnd()) {
+        if (isPropertyAssignment(node)) {
+          foundNode = node;
+          return;
+        }
+  
+        forEachChild(node, findNode);
+      }
+    }
+    else {
+      if (isPropertyAssignment(node)) {
         foundNode = node;
         return;
       }

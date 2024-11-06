@@ -1,10 +1,11 @@
 import { createSourceFile, ScriptTarget } from "typescript";
 import { TextDocument, Position, CancellationToken, Location } from "vscode";
-import { findFunctionNearest } from "../../utils/node";
+import { findAssignment, findFunctionNearest } from "../../utils/node";
 import { ApiDefinitionProvider } from "./api.definition";
 import { State } from "../../types/state";
 import { FunctionResult } from "../../types/function.result";
 import { FunctionProvider } from "../../types/function.provider";
+import { MetaDefinitionProvider } from "./meta.definition";
 
 export class FunctionDefinitionProvider {
   providers: FunctionProvider[] = [];
@@ -12,6 +13,7 @@ export class FunctionDefinitionProvider {
   constructor(private state: State) {
     this.providers.push(
       new ApiDefinitionProvider(state),
+      new MetaDefinitionProvider(state)
     );
   }
 
@@ -55,9 +57,8 @@ export class FunctionDefinitionProvider {
       ScriptTarget.Latest,
       true
     );
-  
-    const offset = document.offsetAt(position);
 
+    const offset = document.offsetAt(position);
     const foundNode = findFunctionNearest(sourceFile, offset);
 
     return foundNode ? {
@@ -65,6 +66,7 @@ export class FunctionDefinitionProvider {
       focusedText: lookingFor,
       documentPath: document.uri.fsPath,
       sourceFile: sourceFile,
+      offset,
       node: foundNode
     } : undefined;
   }

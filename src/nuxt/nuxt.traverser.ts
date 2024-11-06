@@ -11,7 +11,7 @@ export class NuxtTraverser {
     }
     
     for (const extend of project.extends) {
-      result.push(...this.getAllLayouts(project));
+      result.push(...this.getAllLayouts(extend));
     }
 
     return result;
