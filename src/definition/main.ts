@@ -3,15 +3,18 @@ import { State } from "../types/state";
 import { dTsDefinitionProvider } from "./dTs.definition";
 import { defaultProvider } from "../utils/vscode.helper";
 import { ApiDefinitionProvider } from "./api.definition";
+import { FunctionDefinitionProvider } from "./function/function.definition";
 
 export class MainProvider implements DefinitionProvider {
 
   private dTsProvider: dTsDefinitionProvider;
   private apiProvider: ApiDefinitionProvider;
+  private fnProvider: FunctionDefinitionProvider;
   
   constructor(private state: State) {
     this.dTsProvider = new dTsDefinitionProvider(state);
     this.apiProvider = new ApiDefinitionProvider(state);
+    this.fnProvider = new FunctionDefinitionProvider(state);
   }
 
   async provideDefinition(document: TextDocument, position: Position, token: CancellationToken): Promise<Definition | DefinitionLink[] | undefined> {
@@ -36,9 +39,12 @@ export class MainProvider implements DefinitionProvider {
           }
         }
       } else {
-        const apiResult = await this.apiProvider.run(document, position, token);
-        if (apiResult)
-          {result.push(...apiResult);}
+
+        const fnResult = await this.fnProvider.run(document, position, token);
+
+        if (fnResult) {
+          result.push(...fnResult);
+        }
       }
     } catch (error) {
       console.error(error);

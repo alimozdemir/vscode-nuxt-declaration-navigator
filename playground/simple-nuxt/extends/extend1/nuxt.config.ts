@@ -5,5 +5,5 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  extends: ['./extends/extend2']
+  extends: ['../extend2']
 })

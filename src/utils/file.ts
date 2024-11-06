@@ -85,6 +85,15 @@ export function correlatePath(document: TextDocument, importPath: string, worksp
   return absoluteImportPath;
 }
 
+export function buildPath(documentPath: string, importPath: string, workspaceRoot?: string) {
+  const documentFolder = dirname(documentPath);
+  const absoluteImportPath = resolve(workspaceRoot ?? '',
+      documentFolder, importPath);
+
+  return absoluteImportPath;
+}
+
+
 export function resolvePath(mainPath: string, secondPath: string) {
   const absoluteImportPath = resolve(mainPath, secondPath);
 

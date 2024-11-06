@@ -63,6 +63,8 @@ export class NuxtProject {
         path: file
       });
     }
+
+    console.log(this.layouts)
   }
 
 }
