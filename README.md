@@ -2,6 +2,8 @@
   <img src="assets/icon.png" alt="Vue/Nuxt Declaration Navigator Icon" width="200"/>
 </p>
 
+> ⚠️ **Warning: This extension is deprecated. Please use the new extension [Nuxt DX Tools](https://github.com/alimozdemir/nuxt-dx-tools).** ⚠️
+
 # Vue/Nuxt Declaration Navigator
 
 A VSCode extension for navigating `*.d.ts` files, designed to enhance Nuxt projects by auto-locating and navigating to auto-imported components, functions and routes.
