@@ -8,12 +8,10 @@ import { FunctionDefinitionProvider } from "./function/function.definition";
 export class MainProvider implements DefinitionProvider {
 
   private dTsProvider: dTsDefinitionProvider;
-  private apiProvider: ApiDefinitionProvider;
   private fnProvider: FunctionDefinitionProvider;
   
   constructor(private state: State) {
     this.dTsProvider = new dTsDefinitionProvider(state);
-    this.apiProvider = new ApiDefinitionProvider(state);
     this.fnProvider = new FunctionDefinitionProvider(state);
   }
 
@@ -39,9 +37,7 @@ export class MainProvider implements DefinitionProvider {
           }
         }
       } else {
-
         const fnResult = await this.fnProvider.run(document, position, token);
-
         if (fnResult) {
           result.push(...fnResult);
         }
