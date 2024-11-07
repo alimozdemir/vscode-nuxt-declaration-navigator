@@ -94,10 +94,8 @@ export async function nitroRoutesParser(path: string, api: ApiResult): Promise<N
       .replaceAll("'", "")
       .replaceAll('"', "");
 
-    const normalizedPath = normalizeNitroPath(path);
-
     return {
-      originalPath: correlatePath(document, normalizedPath),
+      originalPath: path,
       path: correlatePath(document, path)
     };
   }

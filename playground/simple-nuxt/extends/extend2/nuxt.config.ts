@@ -4,6 +4,5 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   future: {
     compatibilityVersion: 4,
-  },
-  extends: ['./extends/extend1', undefined],
+  }
 })

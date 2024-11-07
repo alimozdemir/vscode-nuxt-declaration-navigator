@@ -4,6 +4,7 @@ import { getNuxtFolder, joinPath } from './utils/file';
 import { ApiHoverProvider } from './hover/api.hover';
 import { MainProvider } from './definition/main';
 import { workspace, ExtensionContext, window, languages, DocumentSelector, Disposable } from 'vscode';
+import { NuxtProject } from './nuxt/nuxt.project';
 
 const extensionName = 'Vue/Nuxt Declaration Navigator';
 const extensionId = 'vscode-nuxt-declaration-navigator';
@@ -48,15 +49,20 @@ export function activate(context: ExtensionContext) {
 
 		getNuxtFolder(state.workspaceRoot).then((folder) => {
 			state.nuxtFolder = folder;
-			state.nitroRoutes = folder ? joinPath(folder, nitroRoutes) : undefined;
+			state.nuxtDotFolder = folder ? joinPath(folder, '.nuxt') : undefined;
+			state.nitroRoutes = state.nuxtDotFolder ? joinPath(state.nuxtDotFolder, nitroRoutes) : undefined;
+
+			if (state.nuxtFolder) {
+				state.nuxtProject = new NuxtProject(state.nuxtFolder);
+				state.nuxtProject.run();
+			}	
+			
 		});
 	}
-
 
 	state.log.appendLine(`${state.extensionName} is now actived (${state.extensionId})`);
 
 	const definitionProvider = languages.registerDefinitionProvider(selectors, new MainProvider(state));
-
 
 	const hoverProvider = new ApiHoverProvider(state);
 	let hover: Disposable | undefined;
