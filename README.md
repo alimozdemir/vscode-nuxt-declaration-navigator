@@ -2,7 +2,7 @@
   <img src="assets/icon.png" alt="Vue/Nuxt Declaration Navigator Icon" width="200"/>
 </p>
 
-> ⚠️ **Warning: This extension is deprecated. Please use the new extension [Nuxt DX Tools](https://github.com/alimozdemir/nuxt-dx-tools).** ⚠️
+> ⚠️ **Warning: This extension is deprecated. Please use the new extension [Nuxt DX Tools](https://github.com/alimozdemir/vscode-nuxt-dx-tools).** ⚠️
 
 # Vue/Nuxt Declaration Navigator
 
